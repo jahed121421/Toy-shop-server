@@ -6,7 +6,13 @@ const app = express()
 const port = process.env.PORT || 5000
 
 // middleware
-app.use(cors())
+const corsConfig ={
+  origin:'',
+  credential: true,
+  methods: ["GET", "PUT", "PATCH", "DELETE", "OPTIONS", "POST"]
+}
+app.use(cors(corsConfig))
+app.options("", cors(corsConfig))
 app.use(express.json())
 
 
@@ -27,7 +33,7 @@ async function run() {
 
 
     // Connect the client to the server	(optional starting in v4.7)
-     await client.connect();
+    //  await client.connect();
 
 
 
@@ -36,22 +42,22 @@ async function run() {
 
     const indexKeys = {name:1, catagory:1};
     const indexOptions = {titel: "nameCategory"};
-    const result = await database.createIndex(indexKeys, indexOptions);
+    // const result = await database.createIndex(indexKeys, indexOptions);
 
 
 
-    app.get("/datasearch/:text", async(req, res)=>{
-      const searchText = req.params.text;
-      const result = await database.find({
-        $or :[{
-          name: {$regex: searchText, $options: "i"}
-        },
-        {
-          catagory: {$regex: searchText, $options: "i"}
-        }],
-      }).toArray();
-      res.send(result);
-    })
+    // app.get("/datasearch/:text", async(req, res)=>{
+    //   const searchText = req.params.text;
+    //   const result = await database.find({
+    //     $or :[{
+    //       name: {$regex: searchText, $options: "i"}
+    //     },
+    //     {
+    //       catagory: {$regex: searchText, $options: "i"}
+    //     }],
+    //   }).toArray();
+    //   res.send(result);
+    // })
     
     app.get('/alldata', async(req, res)=>{
       const cousor = database.find();
@@ -131,3 +137,4 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Website listening on port ${port}`)
 })
+module.exports = app;
