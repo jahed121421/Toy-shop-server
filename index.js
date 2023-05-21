@@ -32,6 +32,26 @@ async function run() {
 
 
     const database = client.db("toyshop").collection('alldata');
+
+
+    const indexKeys = {name:1, catagory:1};
+    const indexOptions = {titel: "nameCategory"};
+    const result = await database.createIndex(indexKeys, indexOptions);
+
+
+
+    app.get("/datasearch/:text", async(req, res)=>{
+      const searchText = req.params.text;
+      const result = await database.find({
+        $or :[{
+          name: {$regex: searchText, $options: "i"}
+        },
+        {
+          catagory: {$regex: searchText, $options: "i"}
+        }],
+      }).toArray();
+      res.send(result);
+    })
     
     app.get('/alldata', async(req, res)=>{
       const cousor = database.find();
