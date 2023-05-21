@@ -64,6 +64,7 @@ async function run() {
       const result = await cousor.limit(20).toArray();
       res.send(result);
     })
+    
     app.post('/sendtoydata', async(req, res)=>{
       const body = req.body;
       console.log(body);
