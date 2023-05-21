@@ -30,15 +30,15 @@ async function run() {
 
 
     // Connect the client to the server	(optional starting in v4.7)
-     await client.connect();
+    //  await client.connect();
 
 
     const database = client.db("toyshop").collection('alldata');
 
-
+// search 
     const indexKeys = {name:1, catagory:1};
     const indexOptions = {titel: "nameCategory"};
-    const result = await database.createIndex(indexKeys, indexOptions);
+    // const result = await database.createIndex(indexKeys, indexOptions);
     
     
     
@@ -54,26 +54,28 @@ async function run() {
       }).toArray();
       res.send(result);
     })
+    // limit uses 
     
     app.get('/alldata', async(req, res)=>{
       const cousor = database.find();
       const result = await cousor.limit(20).toArray();
       res.send(result);
     })
-    
+    // send data to add 
     app.post('/sendtoydata', async(req, res)=>{
       const body = req.body;
       console.log(body);
       const result = await database.insertOne(body);
       res.send(result);
     })
-    
+    // all data by id
     app.get('/alldata/:id', async(req,res)=>{
     const id = req.params.id;
     const query = {_id : new ObjectId(id)}
     const result = await database.findOne(query);
     res.send(result)
     })
+    // mytoy all email 
     app.get('/mytoy', async(req,res)=>{
       let query = {};
       if(req.query?.email){
@@ -83,12 +85,14 @@ async function run() {
     const result = await database.find(query).toArray();
     res.send(result)
     })
+    // delete
     app.delete('/mytoy/:id', async (req, res)=>{
       const id = req.params.id;
       const query = {_id: new ObjectId(id)}
       const result = await database.deleteOne(query);
       res.send(query);
     })
+    // mytoy details 
     
     app.get('/mytoy/:id', async (req, res)=>{
       const id = req.params.id;
@@ -96,6 +100,7 @@ async function run() {
       const result = await database.findOne(query);
       res.send(result)
     })
+    // mytoy page data 
     app.put('/mytoy/:id', async (req, res)=>{
       const id = req.params.id;
       const query = {_id: new ObjectId(id)}
@@ -112,6 +117,17 @@ async function run() {
       const result = await database.updateOne(query, update);
       res.send(result)
     });
+    // sort data 
+    app.get('/alldata', async(req, res )=> {
+      let toys= {}
+      if(req.query.sort === 'all'){
+        toys = await database.find().toArray();
+      }
+      else{
+        toys = await database.find().sort({price: req.query.sort === 'desc' ? -1 : 1}).toArray();
+      }
+      res.send(toys)
+      })
    
     
     // Send a ping to confirm a successful connection
